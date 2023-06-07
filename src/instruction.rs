@@ -5,10 +5,13 @@ pub struct Instruction {
     pub op: u32,
     exec: ExecuteFunc,
     pub function: u32,
+    pub subfunction: u32,
     imm: u32,
     t: u32,
     s: u32,
     d: u32,
+    imm_se: u32,
+    shift: u32,
 }
 impl Instruction {
     pub fn new(op: u32) -> Instruction {
@@ -20,6 +23,9 @@ impl Instruction {
             t: (op >> 16) & 0x1f,
             s: (op >> 21) & 0x1f,
             d: (op >> 15) & 0x1f,
+            subfunction: op & 0x3f,
+            imm_se: ((op & 0xffff) as i16) as u32,
+            shift: (op >> 6) & 0x1f,
         }
     }
 
@@ -40,4 +46,15 @@ pub fn op_ori(cpu: &mut Cpu, instruction: &Instruction) {
     cpu.set_reg(instruction.t, cpu.reg(instruction.s) | instruction.imm);
 }
 
-fn nop(cpu: &mut Cpu, instruction: &Instruction) {}
+pub fn op_sw(cpu: &mut Cpu, instruction: &Instruction) {
+    let addr = cpu.reg(instruction.s).wrapping_add(instruction.imm_se);
+    let v = cpu.reg(instruction.t);
+
+    cpu.store32(addr, v);
+}
+
+pub fn op_sll(cpu: &mut Cpu, instruction: &Instruction) {
+    cpu.set_reg(instruction.d, cpu.reg(instruction.t) << instruction.shift);
+}
+
+fn nop(_cpu: &mut Cpu, _instruction: &Instruction) {}

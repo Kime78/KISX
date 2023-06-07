@@ -9,7 +9,7 @@ pub struct Cpu {
 
 impl Cpu {
     pub fn new(inter: Interconnect) -> Cpu {
-        let mut regs = [0x0; 32];
+        let regs = [0x0; 32];
         Cpu {
             pc: 0xbfc00000,
             inter: inter,
@@ -27,6 +27,10 @@ impl Cpu {
 
     pub fn load32(&self, addr: u32) -> u32 {
         self.inter.load32(addr)
+    }
+
+    pub fn store32(&self, addr: u32, val: u32) {
+        self.inter.store32(addr, val);
     }
 
     pub fn cycle(&mut self) {
@@ -52,10 +56,18 @@ impl Decode for u32 {
     fn decode(self) -> Instruction {
         let mut instr = Instruction::new(self);
         match instr.function {
-            0b001111 => instr.set_exec(op_lui),
+            0b000000 => match instr.subfunction {
+                0b000000 => instr.set_exec(op_sll),
+                _ => panic!(
+                    "Unhandled Subfunction Instruction {:x} with func {:06b}",
+                    self, instr.subfunction
+                ),
+            },
             0b001101 => instr.set_exec(op_ori),
+            0b001111 => instr.set_exec(op_lui),
+            0b101011 => instr.set_exec(op_sw),
             _ => panic!(
-                "Unhandled Instruction {:x} with func {:b}",
+                "Unhandled Instruction {:x} with func {:06b}",
                 self, instr.function
             ),
         }
