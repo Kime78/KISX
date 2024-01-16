@@ -17,14 +17,6 @@ impl Cpu {
         }
     }
 
-    pub fn fetch_instruction(&mut self) -> u32 {
-        //to do return type of Instruction
-        let pc = self.pc;
-        let instruction = self.load32(pc);
-        self.pc = pc.wrapping_add(4);
-        return instruction;
-    }
-
     pub fn load32(&self, addr: u32) -> u32 {
         self.inter.load32(addr)
     }

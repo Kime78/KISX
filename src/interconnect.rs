@@ -38,8 +38,11 @@ impl Interconnect {
                         panic!("Bad expansion 2 base addres 0x{:08x}", val);
                     }
                 }
-                _ => println!("Unhandled write to MEMCONSTROL register"),
+                _ => println!("Unhandled write to MEMCONTROL register"),
             }
+        }
+        if let Some(offset) = map::RAMSIZE.contains(addr) {
+            println!("write to {} {}", addr, offset)
         }
     }
 }
@@ -61,4 +64,5 @@ mod map {
 
     pub const BIOS: Range = Range(0xbfc00000, 512 * 1024);
     pub const MEMCONTROL: Range = Range(0x1f801000, 36);
+    pub const RAMSIZE: Range = Range(0x1f801060, 4);
 }
