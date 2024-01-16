@@ -63,6 +63,7 @@ impl Decode for u32 {
                     self, instr.subfunction
                 ),
             },
+            0b001001 => instr.set_exec(op_addiu),
             0b001101 => instr.set_exec(op_ori),
             0b001111 => instr.set_exec(op_lui),
             0b101011 => instr.set_exec(op_sw),

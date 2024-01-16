@@ -57,4 +57,8 @@ pub fn op_sll(cpu: &mut Cpu, instruction: &Instruction) {
     cpu.set_reg(instruction.d, cpu.reg(instruction.t) << instruction.shift);
 }
 
+pub fn op_addiu(cpu: &mut Cpu, instruction: &Instruction) {
+    cpu.set_reg(instruction.t, instruction.s.wrapping_add(instruction.imm_se))
+}
+
 fn nop(_cpu: &mut Cpu, _instruction: &Instruction) {}
